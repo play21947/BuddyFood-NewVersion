@@ -1,0 +1,33 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/IBM-Bold.ttf",
+      "sha1": "abea3428fa11d49699c29ef1b9825843375ddf19"
+    },
+    {
+      "path": "assets/fonts/IBM-ExtraLight.ttf",
+      "sha1": "d7d912f983f9d290174fa5e2b2cbd32b7a5c29e5"
+    },
+    {
+      "path": "assets/fonts/IBM-Light.ttf",
+      "sha1": "1ce51bc1947507762b4410d567ec4e030e69cfdd"
+    },
+    {
+      "path": "assets/fonts/IBM-Medium.ttf",
+      "sha1": "f3fe175319eeb61e4829b029dcc9cda5432593bf"
+    },
+    {
+      "path": "assets/fonts/IBM-Regular.ttf",
+      "sha1": "4703e0862bfaacb3b501f26d4a09165a0caf86e8"
+    },
+    {
+      "path": "assets/fonts/IBM-SemiBold.ttf",
+      "sha1": "013fcc4f97b4708320701d1688ae2bf08fb36d5d"
+    },
+    {
+      "path": "assets/fonts/IBM-Thin.ttf",
+      "sha1": "535a5f00f90fdc4ebd24c48c866b1b01706f9a95"
+    }
+  ]
+}
