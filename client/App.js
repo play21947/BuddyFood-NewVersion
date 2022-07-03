@@ -9,6 +9,7 @@ import SignIn from './Screens/SignIn'
 import AllReducers from './storage/AllReducers'
 import {useSelector} from 'react-redux'
 import Home from './Screens/Home'
+import LoadingScreen from './Screens/LoadingScreen'
 
 let store = createStore(AllReducers, applyMiddleware(thunk))
 
@@ -23,16 +24,12 @@ const App = () => {
 
   console.log("Auth : ", auth)
 
-  
 
-  // useEffect(()=>{
-    
-  // }, [])
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {!auth.user_id ? <Stack.Screen name='SIGN_IN' component={SignIn} options={{ headerShown: false }}></Stack.Screen> : <Stack.Screen name='HOME' component={Home}></Stack.Screen>}
+        {auth.isLoading ? <Stack.Screen name='LOADING_SCREEN' component={LoadingScreen} options={{headerShown: false}}></Stack.Screen> : !auth.user_id || auth.user_id == null || auth.user_id == '' ? <Stack.Screen name='SIGN_IN' component={SignIn} options={{ headerShown: false }}></Stack.Screen> : <Stack.Screen name='HOME' component={Home} options={{ headerShown: false }}></Stack.Screen>}
       </Stack.Navigator>
     </NavigationContainer>
   )

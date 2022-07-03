@@ -1,8 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
-import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, Button} from 'react-native'
 import { useDispatch } from 'react-redux'
 import { SignInAction } from '../storage/actions/AuthenticationActions'
-import { LoadAction } from '../storage/actions/AuthenticationActions'
 
 
 const SignIn=()=>{
@@ -10,10 +10,6 @@ const SignIn=()=>{
     let [phone, setPhone] = useState('')
     let [password, setPassword] = useState('')
     let dispatch = useDispatch()
-
-    useEffect(()=>{
-        dispatch(LoadAction())
-    }, [])
 
     return(
         <View style={styles.container}>
@@ -28,6 +24,13 @@ const SignIn=()=>{
             <TouchableOpacity onPress={()=>{
                 dispatch(SignInAction(phone, password))
             }} style={{backgroundColor: '#16a34a', display: 'flex', justifyContent: 'center', height: 45, alignItems: 'center', marginTop: 20, borderRadius: 5, elevation: 3}}><Text style={{fontFamily: 'IBM-Regular', fontSize: 22, color: 'white'}}>เข้าสู่ระบบ</Text></TouchableOpacity>
+            {/* <Button title='token' onPress={()=>{
+                AsyncStorage.getItem("token", (err ,rs)=>{
+                    if(err) throw err
+
+                    console.log(rs)
+                })
+            }}></Button> */}
         </View>
     )
 }

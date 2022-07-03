@@ -18,7 +18,7 @@ export const SignInAction = (phone_number, password) => {
                 AsyncStorage.setItem('token', res.data.token)
                 dispatch({
                     type: 'SIGN_IN',
-                    payload: {user_id: res.data.user_id, role: res.data.role}
+                    payload: { user_id: res.data.user_id, role: res.data.role }
                 })
             }
         })
@@ -29,22 +29,34 @@ export const SignInAction = (phone_number, password) => {
 export const LoadAction = () => {
     return ((dispatch) => {
         AsyncStorage.getItem('token').then((token) => {
-            axios.get(`${domain}/check_token`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then((res) => {
-                console.log("Test : ", res.data)
-                if (res.data.expired) {
-                    Alert.alert("Expired Token", 'Pls login again')
-                } else {
-                    console.log("Load :", res.data.data)
-                    dispatch({
-                        type: "LOAD",
-                        payload: res.data.data
-                    })
-                }
-            })
+            if (token) {
+                axios.get(`${domain}/check_token`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then((res) => {
+                    console.log("Test : ", res.data)
+                    if (res.data.expired) {
+                        AsyncStorage.removeItem("token")
+                        Alert.alert("Expired Token", 'Pls login again')
+                        dispatch({
+                            type: "LOAD",
+                            payload: {user_id: '', role: ''}
+                        })
+                    } else {
+                        console.log("Load :", res.data.data)
+                        dispatch({
+                            type: "LOAD",
+                            payload: res.data.data
+                        })
+                    }
+                })
+            }else{
+                dispatch({
+                    type: "LOAD",
+                    payload: { user_id: '', role: '' }
+                })
+            }
         })
     })
 }

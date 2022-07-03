@@ -3,8 +3,12 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const user_model = require('./model/UserSchema')
 const CheckToken = require('./middleware/CheckTokenMiddleware')
+const multer = require('multer')
+
+// SCHEMA IMPORT
+const user_model = require('./model/UserSchema')
+const product_model = require('./model/ProductSchema')
 
 
 // Connnect With MongoDB
@@ -12,6 +16,25 @@ const CheckToken = require('./middleware/CheckTokenMiddleware')
 mongoose.connect("mongodb://localhost:27017/buddyfood")
 
 require('dotenv/config')
+
+const FILE_TYPE = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg'
+}
+
+const storage = multer.diskStorage({
+    destination:((req, file, cb)=>{
+        cb(null, './public/uploads')
+    }),
+    filename:((req, file, cb)=>{
+        let convertFileName = file.originalname.split(' ').join('-')
+        const extension = FILE_TYPE[file.mimetype]
+        cb(null, `${convertFileName}-${Date.now()}.${extension}`)
+    })
+})
+
+const upload = multer({storage: storage})
 
 //Middleware to restful api and prevent cors errors
 
@@ -23,7 +46,7 @@ const api = process.env.URL_API
 
 
 
-app.post(`${api}/sign_in`, (req, res)=>{
+app.post(`${api}/sign_in`, (req, res) => {
 
     //receive data from client
 
@@ -32,40 +55,40 @@ app.post(`${api}/sign_in`, (req, res)=>{
 
     // find where is eqaul with this phone number and password
 
-    user_model.findOne({phone_number: phone_number, password: password}, (err, user)=>{
-        if(err) throw err
+    user_model.findOne({ phone_number: phone_number, password: password }, (err, user) => {
+        if (err) throw err
 
-        if(user){
+        if (user) {
 
 
             let user_id = user._id.toString()
 
-            let token = jwt.sign({user_id: user_id, role: user.role}, 'hello', {expiresIn: '1m'})
+            let token = jwt.sign({ user_id: user_id, role: user.role }, 'hello', { expiresIn: '1hr' })
 
-            res.json({invalid_user: false, token: token, user_id: user_id, role: user.role})
-        }else{
-            res.json({invalid_user: true})
+            res.json({ invalid_user: false, token: token, user_id: user_id, role: user.role })
+        } else {
+            res.json({ invalid_user: true })
         }
     })
 
 })
 
 
-app.post(`${api}/sign_up`, (req, res)=>{
+app.post(`${api}/sign_up`, (req, res) => {
     const phone_number = req.body.phone_number
     const email = req.body.email
     const password = req.body.password
 
     console.log(req.body)
 
-    user_model.findOne({phone_number: phone_number}, (err, user)=>{
-        if(err) throw err
+    user_model.findOne({ phone_number: phone_number }, (err, user) => {
+        if (err) throw err
 
-        if(user){
+        if (user) {
             console.log("This phone number has already taken")
-        }else{
-            user_model.insertMany({phone_number: phone_number, password: password, email: email, role: 0}, (err, inserted)=>{
-                if(err) throw err
+        } else {
+            user_model.insertMany({ phone_number: phone_number, password: password, email: email, role: 0 }, (err, inserted) => {
+                if (err) throw err
 
                 console.log("Register Successfully")
             })
@@ -74,13 +97,35 @@ app.post(`${api}/sign_up`, (req, res)=>{
 
 })
 
-app.get(`${api}/check_token`, CheckToken ,(req, res)=>{
-    result = req.result
-
-
-    res.json(result)
+app.get(`${api}/check_token`, CheckToken, (req, res) => {
+    console.log("Checked Token")
 })
 
-app.listen(3001, ()=>{
+
+app.post(`${api}/upload_product`, upload.single('image') ,(req, res)=>{
+    const fileName = req.file.filename
+    // const product_name = req.body.product_name
+    // const product_price = req.body.product_price
+    // const product_image = 'http://play2api.ddns.net:3001/public/uploads/'+fileName
+    // const seller_id = req.body.seller_id
+
+
+    const product = {
+        product_name: req.body.product_name,
+        product_price: req.body.product_price,
+        product_image: 'http://play2api.ddns.net:3001/public/uploads/'+fileName,
+        seller_id: req.body.seller_id
+    }
+
+    product_model.insertMany(product, (err, inserted)=>{
+        if(err) throw err
+
+        console.log("Added Product")
+    })    
+
+})
+
+
+app.listen(3001, () => {
     console.log("Server is running on port 3001")
 })
