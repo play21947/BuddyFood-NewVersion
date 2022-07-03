@@ -1,16 +1,24 @@
 const initialState = {
-    token: '',
-    loaded: false
+    user_id: '',
+    role: null,
+    isLoading: true
 }
 
 
 const AuthenticationReducer = (state = initialState, action) => {
-    if(action.type === "SIGN_IN"){
-        return{
-            token: action.token,
-            loaded: true
+    if (action.type === "SIGN_IN") {
+        return {
+            user_id: action.payload.user_id,
+            role: action.payload.role,
+            isLoading: false
         }
-    }else{
+    }else if(action.type === "LOAD"){
+        return{
+            user_id: action.payload.user_id,
+            role: action.payload.role,
+            isLoading: false
+        }
+    } else {
         return state
     }
 }

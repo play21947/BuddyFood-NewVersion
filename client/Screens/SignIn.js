@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
 import { useDispatch } from 'react-redux'
 import { SignInAction } from '../storage/actions/AuthenticationActions'
+import { LoadAction } from '../storage/actions/AuthenticationActions'
 
 
 const SignIn=()=>{
@@ -9,6 +10,10 @@ const SignIn=()=>{
     let [phone, setPhone] = useState('')
     let [password, setPassword] = useState('')
     let dispatch = useDispatch()
+
+    useEffect(()=>{
+        dispatch(LoadAction())
+    }, [])
 
     return(
         <View style={styles.container}>
