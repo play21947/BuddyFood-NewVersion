@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const CheckToken = require('./middleware/CheckTokenMiddleware')
 const multer = require('multer')
+const fs = require('fs')
 
 // SCHEMA IMPORT
 const user_model = require('./model/UserSchema')
@@ -24,22 +25,23 @@ const FILE_TYPE = {
 }
 
 const storage = multer.diskStorage({
-    destination:((req, file, cb)=>{
+    destination: ((req, file, cb) => {
         cb(null, './public/uploads')
     }),
-    filename:((req, file, cb)=>{
+    filename: ((req, file, cb) => {
         let convertFileName = file.originalname.split(' ').join('-')
         const extension = FILE_TYPE[file.mimetype]
         cb(null, `${convertFileName}-${Date.now()}.${extension}`)
     })
 })
 
-const upload = multer({storage: storage})
+const upload = multer({ storage: storage })
 
 //Middleware to restful api and prevent cors errors
 
 app.use(express.json())
 app.use(cors())
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
 
 
 const api = process.env.URL_API
@@ -102,27 +104,53 @@ app.get(`${api}/check_token`, CheckToken, (req, res) => {
 })
 
 
-app.post(`${api}/upload_product`, upload.single('image') ,(req, res)=>{
+app.get(`${api}/products`, async (req, res) => {
+    let products = await product_model.find()
+
+    res.json(products)
+})
+
+
+app.post(`${api}/upload_product`, upload.single('image'), (req, res) => {
     const fileName = req.file.filename
     // const product_name = req.body.product_name
     // const product_price = req.body.product_price
     // const product_image = 'http://play2api.ddns.net:3001/public/uploads/'+fileName
     // const seller_id = req.body.seller_id
 
-
     const product = {
         product_name: req.body.product_name,
         product_price: req.body.product_price,
-        product_image: 'http://play2api.ddns.net:3001/public/uploads/'+fileName,
+        product_image: 'http://play2api.ddns.net:3001/public/uploads/' + fileName,
         seller_id: req.body.seller_id
     }
 
-    product_model.insertMany(product, (err, inserted)=>{
-        if(err) throw err
+    product_model.insertMany(product, (err, inserted) => {
+        if (err) throw err
 
         console.log("Added Product")
-    })    
+    })
 
+})
+
+app.post(`${api}/delete_product`, (req, res) => {
+    const id_product = req.body.id_product
+    const image_source = req.body.image_source
+
+    product_model.deleteOne({
+        _id: id_product
+    }).then((res) => {
+        fs.unlinkSync(`./public/uploads/${image_source}`)
+        console.log("Delete photo file success")
+    })
+})
+
+app.get(`${api}/product_id/:product_id`, async(req, res)=>{
+    let product_id = req.params.product_id
+
+    let product = await product_model.findById(product_id)
+
+    res.json(product)
 })
 
 

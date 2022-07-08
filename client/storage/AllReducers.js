@@ -1,8 +1,10 @@
 import { combineReducers } from "redux";
 import AuthenticationReducer from "./reducers/AuthenticationReducer";
+import CartReducer from "./reducers/CartReducer";
 
 const AllReducers = combineReducers({
-    auth: AuthenticationReducer
+    auth: AuthenticationReducer,
+    cart: CartReducer
 })
 
 
